@@ -1,0 +1,109 @@
+name: MyApp
+options:
+  bundleIdPrefix: com.truongdx
+  deploymentTarget: 17.0
+  groupSortPosition: top
+  generateEmptyDirectories: true
+  createIntermediateGroups: true
+  developmentLanguage: en
+
+settings:
+  base:
+    SWIFT_VERSION: 6.3
+    DEVELOPMENT_TEAM: #YOUR_TEAM_ID
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: NO
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    CODE_SIGN_STYLE: Automatic
+
+packages:
+  Kingfisher:
+    url: https://github.com/onevcat/Kingfisher.git
+    from: 8.11.0
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk.git
+    from: 12.18.0
+
+targets:
+  MyApp:
+    type: application
+    platform: iOS
+    deploymentTarget: 17.0
+    sources: 
+      - path: MyApp
+        excludes:
+          - "**/*.example"
+          - "**/*.DS_Store"
+    resources: 
+      - path: MyApp/Resources/Assets.xcassets
+      - path: MyApp/Resources/LaunchScreen.storyboard
+      - path: MyApp/Resources/Localizable.xcstrings
+      - path: MyApp/Resources/GoogleService-Info.plist
+      - path: MyApp/Resources/PrivacyInfo.xcprivacy
+    info:
+      path: MyApp/Resources/Info.plist
+      properties:
+        CFBundleShortVersionString: ${MARKETING_VERSION}
+        CFBundleVersion: ${CURRENT_PROJECT_VERSION}
+        ITSAppUsesNonExemptEncryption: false
+        NSUserTrackingUsageDescription: We use tracking to personalize your experience and measure which features help users most.
+        UIBackgroundModes:
+          - fetch
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIRequiresFullScreen: true
+        LSRequiresIPhoneOS: true
+        UILaunchStoryboardName: LaunchScreen
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations:
+          - en
+          - vi
+    entitlements:
+      path: MyApp/MyApp.entitlements
+      properties: {}
+    postBuildScripts:
+      - name: Crashlytics dSYM upload
+        script: |
+          if [ -d "${BUILD_DIR%Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics" ]; then
+            "${BUILD_DIR%Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
+          else
+            echo "Crashlytics run script not found. Please check your Firebase installation."
+          fi
+        inputFiles:
+          - "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}"
+          - "${TARGET_BUILD_DIR}/${INFOPLIST_PATH}"
+        basedOnDependencyAnalysis: false
+    dependencies:
+      - package: Kingfisher
+      - package: Firebase
+        products:
+          - FirebaseCore
+          - FirebaseAnalytics
+          - FirebaseCrashlytics
+          - FirebaseRemoteConfig
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: 1
+        PRODUCT_BUNDLE_IDENTIFIER: com.truongdx.myapp
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        MARKETING_VERSION: 1.0.0
+        CURRENT_PROJECT_VERSION: 1
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
+
+schemes:
+  MyApp:
+    build:
+      targets:
+        MyApp: all
+    run:
+      config: Debug
+      commandLineArguments:
+        - name: -FIRDebugEnabled
+          enabled: true
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

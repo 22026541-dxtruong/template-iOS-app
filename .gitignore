@@ -1,0 +1,32 @@
+# macOS
+.DS_Store
+
+# Xcode
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+build/
+
+# Swift Package Manager
+.build/
+Packages/
+Package.pins
+Package.resolved
+*.xcodeproj/project.xcworkspace/xcuserdata/
+
+# xcodegen output (regenerated from project.yml — don't commit)
+ios/MyApp.xcodeproj/
+
+# Secrets — copy Secrets.swift.example → Secrets.swift and never commit
+ios/MyApp/Secrets.swift
+
+# Firebase config — drop GoogleService-Info.plist alongside the source files
+# but never commit it (contains your API keys)
+ios/MyApp/GoogleService-Info.plist
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
