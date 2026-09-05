@@ -1,15 +1,12 @@
 import SwiftUI
-import SwiftData
 
-struct RootView : View {
-
-    @Environment(\.modelContext) private var modelContext
-    @Query(sort: \User.name) private var users: [User]
+struct RootView: View {
+    @AppStorage(AppStorageKeys.hasCompletedOnboarding) private var hasCompletedOnboarding: Bool = false
 
     var body: some View {
         AppFlow {
             Group {
-                if users.isEmpty {
+                if hasCompletedOnboarding == false {
                     OnboardingFlowView()
                 } else {
                     MainView()

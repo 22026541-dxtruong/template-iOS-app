@@ -1,0 +1,12 @@
+{
+    "[swift]": {
+        "editor.defaultFormatter": "swiftlang.swift-vscode",
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": false,
+            "strings": false
+        },
+        "editor.suggestOnTriggerCharacters": true,
+        "editor.inlineSuggest.enabled": true
+    },
+}

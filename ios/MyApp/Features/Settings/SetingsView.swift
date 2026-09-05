@@ -2,13 +2,13 @@ import SwiftUI
 
 struct SettingsView: View {
 	@Environment(AppRouter.self) private var router
-	@State private var viewModel = SettingsViewModel()
 	@State private var notificationMessage: String?
+	@AppStorage(AppStorageKeys.enabledNotifications) private var notificationsEnabled: Bool = false
 
 	var body: some View {
 		Form {
 			Section("Preferences") {
-				Toggle("Notifications", isOn: $viewModel.notificationsEnabled)
+				Toggle("Notifications", isOn: $notificationsEnabled)
 				if let notificationMessage {
 					Text(notificationMessage)
 						.font(.footnote)
@@ -26,7 +26,7 @@ struct SettingsView: View {
 					.foregroundStyle(.secondary)
 			}
 		}
-		.onChange(of: viewModel.notificationsEnabled) { _, enabled in
+		.onChange(of: notificationsEnabled) { _, enabled in
 			guard enabled else {
 				Task {
 					await NotificationService.shared.cancelAllNotifications()

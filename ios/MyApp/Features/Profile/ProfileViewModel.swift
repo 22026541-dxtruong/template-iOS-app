@@ -1,11 +1,19 @@
 import Foundation
 import Observation
-import SwiftData
 
 @Observable
+@MainActor
 final class ProfileViewModel {
-	var userName: String = "Unknown"
+    var user: User?
+    private let userRepo: UserRepository
 
-	func start(userID: UUID, using context: ModelContext) {
-	}
+    init(_ userRepo: UserRepository = .shared) {
+        self.userRepo = userRepo
+    }
+
+    func refresh(id: UUID) async throws {
+        AppLogger.app.info("ProfileViewModel refresh started")
+        user = try await userRepo.getUser(byID: id)
+        AppLogger.app.info("ProfileViewModel refresh finished")
+    }
 }

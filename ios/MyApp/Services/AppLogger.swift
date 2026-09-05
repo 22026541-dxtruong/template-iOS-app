@@ -10,5 +10,5 @@ enum AppLogger {
     static let remoteConfig = Logger(subsystem: subsystem, category: "RemoteConfig")
     static let analytics = Logger(subsystem: subsystem, category: "Analytics")
     static let notification = Logger(subsystem: subsystem, category: "Notification")
-    static let modelContext = Logger(subsystem: subsystem, category: "ModelContext")
+    static let database = Logger(subsystem: subsystem, category: "Database")
 }

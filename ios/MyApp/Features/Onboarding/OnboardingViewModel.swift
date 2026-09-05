@@ -1,20 +1,18 @@
 import Foundation
-import SwiftData
 import Observation
 
 @Observable
+@MainActor
 final class OnboardingViewModel {
-	var name = ""
-	private var modelContext: ModelContext?
+    private let userRepo: UserRepository
 
-	func start(using context: ModelContext) {
-		modelContext = context
-	}
+    init(_ userRepo: UserRepository = .shared) {
+        self.userRepo = userRepo
+    }
 
-	func finish() {
-		guard let modelContext else { return }
-		let user = User(name: name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Friend" : name)
-		modelContext.insert(user)
-		try? modelContext.save()
-	}
+    func saveUser(name: String) async throws {
+        let savedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let user = User(name: savedName.isEmpty ? "Friend" : savedName)
+        try await userRepo.saveUser(user)
+    }
 }

@@ -5,19 +5,17 @@ import Observation
 @MainActor
 class MainViewModel {
     var isLoading = false
-    var items: [Item] = []
-    
-    func loadItems() {
-        isLoading = true
-        // Simulate a network or database call
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.items = [Item(name: "Item 1"), Item(name: "Item 2"), Item(name: "Item 3")]
-            self.isLoading = false
-        }
-    }
-}
+    var users: [User] = []
 
-struct Item: Identifiable {
-    let id = UUID()
-    let name: String
+    private let userRepo: UserRepository
+
+    init(_ userRepo: UserRepository = .shared) {
+        self.userRepo = userRepo
+    }
+    
+    func fetchUsers() async throws {
+        isLoading = true
+        users = try await userRepo.getAllUsers()
+        isLoading = false
+    }
 }

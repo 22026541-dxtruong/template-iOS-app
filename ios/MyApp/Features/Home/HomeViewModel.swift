@@ -1,20 +1,22 @@
 import Foundation
 import Observation
-import SwiftData
 
 @Observable
+@MainActor
 final class HomeViewModel {
-	var isRefreshing = false
-	var userName: String = "Friend"
+    var isRefreshing = false
+    var user: User?
+    private let userRepo: UserRepository
 
-	func start(using context: ModelContext) {
-	}
+    init(_ userRepo: UserRepository = .shared) {
+        self.userRepo = userRepo
+    }
 
-	func refresh() async {
-		AppLogger.app.info("HomeViewModel refresh started")
-		isRefreshing = true
-		try? await Task.sleep(for: .milliseconds(250))
-		isRefreshing = false
-		AppLogger.app.info("HomeViewModel refresh finished")
-	}
+    func refresh(id: UUID) async throws {
+        AppLogger.app.info("HomeViewModel refresh started")
+        isRefreshing = true
+        user = try await userRepo.getUser(byID: id)
+        isRefreshing = false
+        AppLogger.app.info("HomeViewModel refresh finished")
+    }
 }

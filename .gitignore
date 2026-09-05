@@ -13,6 +13,7 @@ Packages/
 Package.pins
 Package.resolved
 *.xcodeproj/project.xcworkspace/xcuserdata/
+**/xtool
 
 # xcodegen output (regenerated from project.yml — don't commit)
 ios/MyApp.xcodeproj/
@@ -26,7 +27,6 @@ ios/MyApp/GoogleService-Info.plist
 
 # IDE
 .idea/
-.vscode/
 
 # Logs
 *.log

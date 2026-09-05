@@ -1,0 +1,13 @@
+version: 1
+
+bundleID: com.truongdx.myapp
+
+product: MyApp
+
+# infoPath: MyApp/Resources/Info.plist
+
+# entitlementsPath: MyApp/MyApp.entitlements
+
+resources:
+  - MyApp/Resources/GoogleService-Info.plist
+  - MyApp/Resources/PrivacyInfo.xcprivacy
