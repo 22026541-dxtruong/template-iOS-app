@@ -135,6 +135,46 @@ Project có workflow build iOS ở:
 
 Workflow này chạy trên GitHub-hosted macOS runner, generate project bằng XcodeGen, và build app trên simulator.
 
+### Firebase configuration trong CI
+
+`GoogleService-Info.plist` không được commit vì chứa cấu hình riêng của Firebase. Để GitHub Actions build được app:
+
+1. Tải file `GoogleService-Info.plist` từ Firebase Console → Project settings → Your apps → iOS app.
+2. Mã hóa file thành một dòng Base64. Trên Linux, để copy trực tiếp vào clipboard trong VS Code terminal:
+
+```bash
+encoded=$(base64 -w 0 ios/MyApp/GoogleService-Info.plist)
+printf '\033]52;c;%s\a' "$encoded"
+```
+
+Nếu terminal không hỗ trợ OSC 52, có thể cài `xclip` rồi dùng:
+
+```bash
+sudo apt install xclip
+base64 -w 0 ios/MyApp/GoogleService-Info.plist | xclip -selection clipboard
+```
+
+Hoặc chỉ tạo file Base64 tạm:
+
+```bash
+base64 -w 0 ios/MyApp/GoogleService-Info.plist > /tmp/firebase-google-service-info.b64
+```
+
+Trên macOS có thể dùng:
+
+```bash
+base64 -i ios/MyApp/GoogleService-Info.plist | tr -d '\n' | pbcopy
+```
+
+3. Vào GitHub repository → Settings → Secrets and variables → Actions → New repository secret.
+4. Tạo secret tên `FIREBASE_GOOGLE_SERVICE_INFO_PLIST_BASE64` và dán giá trị Base64 vào. Nếu đã cài và đăng nhập GitHub CLI, có thể tạo secret trực tiếp:
+
+```bash
+gh secret set FIREBASE_GOOGLE_SERVICE_INFO_PLIST_BASE64 < /tmp/firebase-google-service-info.b64
+```
+
+Workflow sẽ khôi phục file vào `ios/MyApp/GoogleService-Info.plist` trước khi chạy XcodeGen. Không commit file plist thật vào repository.
+
 ## Tính năng có sẵn
 
 - SwiftUI app shell
