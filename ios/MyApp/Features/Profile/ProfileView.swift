@@ -16,11 +16,10 @@ struct ProfileView: View {
             } catch {
                 AppLogger.app.error("Failed to load profile user: \(error.localizedDescription)")
             }
-
-            Task {
-                await AnalyticsService.shared.trackScreenView(.profile)
-                await AnalyticsService.shared.trackEvent(.profileViewed)
-            }
+        }
+        .onAppear {
+            AnalyticsService.shared.trackScreenView(.profile)
+            AnalyticsService.shared.trackEvent(.profileViewed)
         }
     }
 }

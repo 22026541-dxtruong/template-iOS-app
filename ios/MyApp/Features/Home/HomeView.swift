@@ -18,6 +18,12 @@ struct HomeView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .onAppear {
+            let msg = RemoteConfigService.shared.string(forKey: .welcomeMessage)
+            if !msg.isEmpty {
+                welcomeMessage = msg
+            }
+        }
         .task {
             do {
                 try await viewModel.refresh(id: userId)
@@ -25,16 +31,9 @@ struct HomeView: View {
                 AppLogger.app.error("Failed to refresh user: \(error.localizedDescription)")
             }
         }
-        .onAppear {
-            Task {
-                let msg = await RemoteConfigService.shared.string(forKey: RemoteConfigKeys.welcomeMessage)
-                if !msg.isEmpty {
-                    welcomeMessage = msg
-                }
-
-                await NotificationService.shared.requestAuthorization { granted in
-                    AppLogger.notification.info("Notification granted: \(granted)")
-                }
+        .task {
+            await NotificationService.shared.requestAuthorization { granted in
+                AppLogger.notification.info("Notification granted: \(granted)")
             }
         }
     }

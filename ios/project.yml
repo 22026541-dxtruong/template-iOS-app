@@ -40,7 +40,7 @@ targets:
       - path: MyApp/Resources/Assets.xcassets
       - path: MyApp/Resources/LaunchScreen.storyboard
       - path: MyApp/Resources/Localizable.xcstrings
-      - path: MyApp/Resources/GoogleService-Info.plist
+      - path: MyApp/GoogleService-Info.plist
       - path: MyApp/Resources/PrivacyInfo.xcprivacy
     info:
       path: MyApp/Resources/Info.plist

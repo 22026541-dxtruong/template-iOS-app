@@ -1,6 +1,7 @@
 import Foundation
 
-struct AppStorageKeys {
+// MARK: AppStorageKeys
+extension String {
     static let hasCompletedOnboarding = "hasCompletedOnboarding"
     static let enabledNotifications = "enabledNotifications"
 }

@@ -5,7 +5,9 @@ struct MainView: View {
     @State private var viewModel = MainViewModel()
 
     var body: some View {
-        TabView {
+        @Bindable var router = router
+        
+        TabView(selection: $router.selectedTab) {
             Group {
                 if let userID = viewModel.users.first?.id {
                     HomeView(userId: userID)
@@ -15,9 +17,12 @@ struct MainView: View {
                     Text("No user found")
                 }
             }
-            .tabItem { Label("Home", systemImage: "house") }
+            .tag(AppTab.home)
+            .tabItem { Label(AppTab.home.title, systemImage: AppTab.home.iconName) }
+            
             SettingsView()
-                .tabItem { Label("Settings", systemImage: "gearshape") }
+                .tag(AppTab.settings)
+                .tabItem { Label(AppTab.settings.title, systemImage: AppTab.settings.iconName) }
         }
         .task {
             do {

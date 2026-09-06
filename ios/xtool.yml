@@ -9,5 +9,5 @@ product: MyApp
 # entitlementsPath: MyApp/MyApp.entitlements
 
 resources:
-  - MyApp/Resources/GoogleService-Info.plist
+  - MyApp/GoogleService-Info.plist
   - MyApp/Resources/PrivacyInfo.xcprivacy

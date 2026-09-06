@@ -4,37 +4,40 @@ import FirebaseCore
 @main
 struct MyAppApp: App {
     init() {
-        _ = AppDatabase.shared
-        configureFirebaseIfAvailable()
+        setupDependencies()
+    }
 
-        Task {
-            guard FirebaseApp.app() != nil else { return }
-            await AnalyticsService.shared.trackEvent(.appLaunch)
-            try? await RemoteConfigService.shared.fetchAndActivate()
-        }
+    private func setupDependencies() {
+        _ = AppDatabase.shared
+        FirebaseApp.configure()
 
         #if DEBUG
         BootClock.log("MyAppApp.init")
         #endif
     }
 
-    private func configureFirebaseIfAvailable() {
-        guard FirebaseApp.app() == nil,
-              let path = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
-              let values = NSDictionary(contentsOfFile: path),
-              let projectID = values["PROJECT_ID"] as? String,
-              !projectID.contains("replace-with") else {
-            AppLogger.app.info("Firebase configuration not found; Firebase services are disabled.")
-            return
-        }
-
-        FirebaseApp.configure()
-    }
+    @State private var isInitializing = true
 
     var body: some Scene {
         WindowGroup {
-            RootView()
+            if isInitializing {
+                SplashView()
+                    .task {
+                        await performAsyncStartupTasks()
+                        withAnimation {
+                            isInitializing = false
+                        }
+                    }
+            } else {
+                RootView()
+            }
         }
+    }
+
+    private func performAsyncStartupTasks() async {
+        guard FirebaseApp.app() != nil else { return }
+        AnalyticsService.shared.trackEvent(.appLaunch)
+        await RemoteConfigService.shared.fetchAndActivate()
     }
 }
 

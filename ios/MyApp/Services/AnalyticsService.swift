@@ -27,7 +27,7 @@ extension AnalyticsService {
     
 }
 
-actor AnalyticsService {
+struct AnalyticsService {
     static let shared = AnalyticsService()
 
     func trackEvent(_ event: Event, parameters: [Parameter: Any]? = nil) {

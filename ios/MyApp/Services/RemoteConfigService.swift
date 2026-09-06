@@ -2,43 +2,42 @@ import Foundation
 import FirebaseRemoteConfig
 import FirebaseCore
 
-struct RemoteConfigKeys {
-    static let welcomeMessage = "welcome_message"
+extension RemoteConfigService {
+    
+    enum Keys: String {
+        case welcomeMessage = "welcome_message"
+    }
+    
+    struct Defaults {
+        static let welcomeMessage = "Welcome to MyApp!"
+    }
 }
 
-struct RemoteConfigDefaults {
-    static let welcomeMessage = "Welcome to MyApp!"
-}
-
-actor RemoteConfigService {
+struct RemoteConfigService: @unchecked Sendable{
     static let shared = RemoteConfigService()
 
-    private let remoteConfig: RemoteConfig?
+    private let remoteConfig: RemoteConfig
+    
+    let defaults: [String: NSObject] = [
+        Keys.welcomeMessage.rawValue: Defaults.welcomeMessage as NSObject
+    ]
 
     private init() {
-        if FirebaseCore.FirebaseApp.app() != nil {
-            let rc = RemoteConfig.remoteConfig()
-            let settings = RemoteConfigSettings()
+        let rc = RemoteConfig.remoteConfig()
+        let settings = RemoteConfigSettings()
 
-            #if DEBUG
-            settings.minimumFetchInterval = 0 // For development, fetch every time
-            #else
-            settings.minimumFetchInterval = 3600 // 1 hour
-            #endif
-            rc.configSettings = settings
-            
-            let defaults: [String: NSObject] = [
-                RemoteConfigKeys.welcomeMessage: RemoteConfigDefaults.welcomeMessage as NSObject
-            ]
-            rc.setDefaults(defaults)
-            remoteConfig = rc
-        } else {
-            remoteConfig = nil
-        }
+        #if DEBUG
+        settings.minimumFetchInterval = 0 // For development, fetch every time
+        #else
+        settings.minimumFetchInterval = 3600 // 1 hour
+        #endif
+        rc.configSettings = settings
+        
+        rc.setDefaults(defaults)
+        remoteConfig = rc
     }
 
-    func fetchAndActivate() async throws {
-        guard let remoteConfig = remoteConfig else { return }
+    func fetchAndActivate() async {
         do {
             let status = try await remoteConfig.fetchAndActivate()
             AppLogger.remoteConfig.info("Remote config fetched and activated with status: \(status.rawValue)")
@@ -47,27 +46,29 @@ actor RemoteConfigService {
         }
     }
 
-    func string(forKey key: String) -> String {
-        return remoteConfig?.configValue(forKey: key).stringValue ?? {
-            if key == RemoteConfigKeys.welcomeMessage { return RemoteConfigDefaults.welcomeMessage }
-            return ""
-        }()
+    func string(forKey key: Keys) -> String {
+        let value = remoteConfig.configValue(forKey: key.rawValue).stringValue
+        if !value.isEmpty {
+            return value
+        }
+        if key == .welcomeMessage { return Defaults.welcomeMessage }
+        return ""
     }
 
-    func bool(forKey key: String) -> Bool {
-        return remoteConfig?.configValue(forKey: key).boolValue ?? false
+    func bool(forKey key: Keys) -> Bool {
+        return remoteConfig.configValue(forKey: key.rawValue).boolValue
     }
 
-    func int(forKey key: String) -> Int {
-        return remoteConfig?.configValue(forKey: key).numberValue.intValue ?? 0
+    func int(forKey key: Keys) -> Int {
+        return remoteConfig.configValue(forKey: key.rawValue).numberValue.intValue
     }
 
-    func double(forKey key: String) -> Double {
-        return remoteConfig?.configValue(forKey: key).numberValue.doubleValue ?? 0.0
+    func double(forKey key: Keys) -> Double {
+        return remoteConfig.configValue(forKey: key.rawValue).numberValue.doubleValue
     }
 
-    func json(forKey key: String) -> [String: Any]? {
-        guard let data = remoteConfig?.configValue(forKey: key).dataValue else { return nil }
+    func json(forKey key: Keys) -> [String: Any]? {
+        let data = remoteConfig.configValue(forKey: key.rawValue).dataValue
         return (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
     }
 }

@@ -6,6 +6,7 @@ class AppRouter {
     var selectedTab: AppTab = .home
     var navigationPath = NavigationPath()
     var presentedSheet: AppDestination?
+    var presentedDialog: AppDialog?
 
     func navigate(to destination: AppDestination) {
         navigationPath.append(destination)
@@ -17,6 +18,14 @@ class AppRouter {
 
     func dismissSheet() {
         presentedSheet = nil
+    }
+
+    func presentDialog(_ dialog: AppDialog) {
+        presentedDialog = dialog
+    }
+
+    func dismissDialog() {
+        presentedDialog = nil
     }
 
     func pop() {

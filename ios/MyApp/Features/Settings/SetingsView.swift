@@ -3,7 +3,7 @@ import SwiftUI
 struct SettingsView: View {
 	@Environment(AppRouter.self) private var router
 	@State private var notificationMessage: String?
-	@AppStorage(AppStorageKeys.enabledNotifications) private var notificationsEnabled: Bool = false
+	@AppStorage(.enabledNotifications) private var notificationsEnabled: Bool = false
 
 	var body: some View {
 		Form {

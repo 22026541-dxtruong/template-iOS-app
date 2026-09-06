@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct OnboardingFlowView: View {
-    @AppStorage(AppStorageKeys.hasCompletedOnboarding) private var hasCompletedOnboarding: Bool = false
+    @AppStorage(.hasCompletedOnboarding) private var hasCompletedOnboarding: Bool = false
 
     @State private var viewModel = OnboardingViewModel()
 
